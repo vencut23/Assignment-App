@@ -2,16 +2,27 @@ const router = require('express').Router();
 const Property = require('../models/Property');
 const auth = require('../middleware/auth');
 
-// Get all properties
-router.get('/', async (req, res) => {
+// Get all properties for the authenticated user
+router.get('/', auth, async (req, res) => {
   try {
-    const properties = await Property.find().populate('rooms');
+    const properties = await Property.find({ owner: req.user.id }).populate('rooms');
     res.json(properties);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 });
+
+// // Get all properties
+// router.get('/', async (req, res) => {
+//   try {
+//     const properties = await Property.find().populate('rooms');
+//     res.json(properties);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server Error');
+//   }
+// });
 
 // Get property by ID
 router.get('/:id', async (req, res) => {
@@ -40,7 +51,7 @@ router.post('/', auth, async (req, res) => {
 
   try {
     const newProperty = new Property({
-      owner: req.user.id,
+      owner: req.user._id,
       name,
       address
     });
