@@ -20,10 +20,12 @@ const PropertiesPage = () => {
           const userData = await response.json();
           setUser(userData);
         } else {
+          localStorage.removeItem('authToken');
           navigate('/login');
         }
       } catch (err) {
         console.error(err);
+        localStorage.removeItem('authToken');
         navigate('/login');
       }
     };
